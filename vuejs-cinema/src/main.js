@@ -1,10 +1,11 @@
 import Vue from 'vue';
 import './style.scss';
 
-import Overview from './components/Overview.vue';
-
 import VueResource from 'vue-resource';
 Vue.use(VueResource);
+
+import VueRouter from 'vue-router';
+Vue.use(VueRouter);
 
 import moment from 'moment-timezone';
 moment.tz.setDefault("UTC");
@@ -14,6 +15,11 @@ import { checkFilter } from './util/bus';
 
 const bus = new Vue();
 Object.defineProperty(Vue.prototype, '$bus', { get() { return this.$root.bus }});
+
+
+import routes from './util/routes.vue';
+
+const router = new VueRouter({ routes });
 
 new Vue({
     el: '#app',
@@ -25,13 +31,11 @@ new Vue({
         day: moment(),
         bus
     },
-    components: {
-        Overview
-    },
     created() {
         this.$http.get('/api').then(response => {
             this.movies = response.data;
         })
         this.$bus.$on('check-filter', checkFilter.bind(this) );
-    }
+    },
+    router
 });
